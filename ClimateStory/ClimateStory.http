@@ -1,0 +1,6 @@
+@ClimateStory_HostAddress = http://localhost:5118
+
+GET {{ClimateStory_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
