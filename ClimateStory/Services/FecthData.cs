@@ -20,17 +20,25 @@ public class FecthData : IFecthData
     public FecthData(HttpClient httpClient)
     {
         _httpClient = httpClient;
+        ConfigureHttpClient();
     }
 
-    public async Task<bool> CheckSTACApiIsRunning()
+    public void ConfigureHttpClient()
+    {
+        _httpClient.DefaultRequestHeaders
+            .Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("curl/7.68.0");
+    }
+    public async Task<string> CheckSTACApiIsRunning()
     {
         try
         {
-            var ApiUrl = $"{STAC_API_URL}/collections/{collection_name}";
+            var ApiUrl = "https://earth.gov/ghgcenter/api/stac/collections/odiac-ffco2-monthgrid-v2023";
             var response = await _httpClient.GetAsync(ApiUrl);
             response.EnsureSuccessStatusCode();
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            return true;
+            
+            return jsonResponse;
         }
         catch (Exception ex)
         {
@@ -39,7 +47,7 @@ public class FecthData : IFecthData
         }
     }
 
-    private async Task<ResponseFromExternalApi> GetItensFromSTACApi()
+    public async Task<ResponseFromExternalApi> GetItensFromSTACApi()
     {
         try
         {
@@ -48,16 +56,8 @@ public class FecthData : IFecthData
             response.EnsureSuccessStatusCode();
             
             var jsonObject = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            // Access the "features" field from the JSON response
-            var features = jsonObject["features"];
-
-            int size = 0;
-            foreach (var feat in features)
-            {
-                size++;
-            }
-            return new ResponseFromExternalApi(){JObject = jsonObject, Num = size};
+            
+            return new ResponseFromExternalApi(){json = jsonObject["features"].ToString(), Num = (int)jsonObject["context"]["returned"]};
         }
         catch (Exception e)
         {
@@ -81,7 +81,7 @@ public class FecthData : IFecthData
         var bottomleftlong = ConvertLongitude(longi + 0.4);
         
         
-        var AreaOfInterst = $@" {{""type"": ""Feature"",
+        var AreaOfInterst = $@""" {{""type"": ""Feature"",
                             ""properties"": {{}},
                             ""geometry"": {{ 
                                 ""coordinates"": [
@@ -93,7 +93,7 @@ public class FecthData : IFecthData
                                     ],
                                 ""type"": ""Polygon"",
                             }},
-                            }}";
+                            }}""";
 
         return null;
     }
@@ -111,6 +111,6 @@ public class FecthData : IFecthData
 
 public class ResponseFromExternalApi()
 {
-    public JObject? JObject { get; set; }
+    public string? json { get; set; }
     public int? Num { get; set; }
 }

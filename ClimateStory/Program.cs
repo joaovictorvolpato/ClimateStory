@@ -17,6 +17,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IHashService, HashService>();
 builder.Services.AddScoped<IMailService, MailService>();
+builder.Services.AddScoped<IFecthData, FecthData>();
 builder.Services.AddHttpClient<FecthData>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
