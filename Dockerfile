@@ -27,5 +27,4 @@ COPY --from=build /out .
 
 #Expor a porta que o aplicativo irá utilizar (caso seja uma aplicação web)
 EXPOSE 80
-#Definir o comando de entrada para iniciar o aplicativo
-ENTRYPOINT ["dotnet", "ClimateStory.dll"]
+
