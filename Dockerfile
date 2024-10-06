@@ -8,7 +8,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y git
 
 #Clonar o repositório do GitHub
-RUN git clone https://github.com/joaovictorvolpato/ClimateStory.git .
+RUN git clone gh repo clone joaovictorvolpato/ClimateStory .
 
 #Restaurar as dependências do projeto .NET
 RUN dotnet restore
