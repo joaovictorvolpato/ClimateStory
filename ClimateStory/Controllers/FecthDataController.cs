@@ -17,7 +17,7 @@ public class FecthDataController : ControllerBase
 
     // GET: api/statistics?latitude=35.6895&longitude=139.6917
     [HttpGet("get-statistics")]
-    public async Task<ActionResult<StatisticsResponse>> GetStatistics([FromQuery] double latitude, [FromQuery] double longitude)
+    public async Task<ActionResult<List<YearlyStatistics>>> GetStatistics([FromQuery] double latitude, [FromQuery] double longitude)
     {
         if (latitude == 0 || longitude == 0)
         {
@@ -27,8 +27,9 @@ public class FecthDataController : ControllerBase
         // Call the service to fetch data based on coordinates
         var statisticsData = await _statisticsService.GetStatsForRegionAsync(latitude, longitude);
 
+        var response = YearlyStatistics.ConvertToYearlyStatisticsAll(statisticsData);
         // Return the statistics data (as JSON)
-        return Ok(statisticsData);
+        return Ok(response);
     }
     
     [HttpGet("get-itens")]
@@ -36,7 +37,7 @@ public class FecthDataController : ControllerBase
     {
         var items = await _statisticsService.GetItensFromSTACApi();
         // Return the statistics data (as JSON)
-        return Ok(items);
+        return Ok(items.json.ToString());
     }
     
     [HttpGet("check-api")]
