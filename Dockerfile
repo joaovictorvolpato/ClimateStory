@@ -1,28 +1,31 @@
-# Use the official .NET 8 SDK image for building the application
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+#Usar uma imagem base oficial do .NET SDK
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-# Set the working directory inside the container
+#Definir o diretório de trabalho dentro do container
 WORKDIR /app
 
-# Copy the .csproj file and restore dependencies
-COPY *.csproj ./
+#Instalar git para clonar o repositório
+RUN apt-get update && apt-get install -y git
+
+#Clonar o repositório do GitHub
+RUN git clone https://github.com/joaovictorvolpato/ClimateStory.git .
+
+#Restaurar as dependências do projeto .NET
 RUN dotnet restore
 
-# Copy the rest of the application code and build the project
-COPY . ./
-RUN dotnet publish -c Release -o out
+#Publicar o aplicativo (compilar para produção)
+RUN dotnet publish -c Release -o /out
 
-# Build a runtime image with .NET 8 runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+#Usar uma imagem mais leve do .NET runtime para a execução
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 
-# Set the working directory for the runtime image
+#Definir o diretório de trabalho
 WORKDIR /app
 
-# Copy the build output from the build stage
-COPY --from=build-env /app/out .
+#Copiar os arquivos do estágio de build para o estágio de runtime
+COPY --from=build /out .
 
-# Expose the application's port (modify according to your app)
+#Expor a porta que o aplicativo irá utilizar (caso seja uma aplicação web)
 EXPOSE 80
-
-# Run the application
+#Definir o comando de entrada para iniciar o aplicativo
 ENTRYPOINT ["dotnet", "ClimateStory.dll"]
