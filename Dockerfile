@@ -8,7 +8,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y git
 
 
-RUN git clone gh repo clone joaovictorvolpato/ClimateStory .
+RUN git clone https://github.com/joaovictorvolpato/ClimateStory.git .
 
 
 RUN dotnet restore
